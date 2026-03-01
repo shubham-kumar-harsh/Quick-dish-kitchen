@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="QuickDishKitchen - Delicious Indian cloud kitchen delivering authentic flavors to your doorstep in Bengaluru">
+    <title>QuickDishKitchen - Authentic Indian Cloud Kitchen</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="icon" type="image/x-icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🍛</text></svg>">
+</head>
+<body>
+    <!-- Admin Access Button (hidden by default) -->
+    <button id="adminAccessBtn" class="admin-access-btn" title="Admin Access">
+        <i class="fas fa-cog"></i>
+    </button>
+
+    <!-- Password Modal -->
+    <div id="passwordModal" class="modal">
+        <div class="modal-content" style="max-width: 400px;">
+            <div class="modal-header">
+                <h3><i class="fas fa-lock"></i> Admin Login</h3>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="adminPassword">Enter Admin Password:</label>
+                    <input type="password" id="adminPassword" placeholder="Enter password" autocomplete="off">
+                    <small class="password-hint">Default password: admin123 (Change it in admin panel)</small>
+                </div>
+                <div id="passwordError" class="error-message" style="color: #dc3545; display: none; margin-top: 10px;">
+                    <i class="fas fa-exclamation-circle"></i> Incorrect password. Please try again.
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button id="cancelPasswordBtn" class="btn btn-secondary">Cancel</button>
+                <button id="submitPasswordBtn" class="btn btn-primary">Login</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Admin Panel Overlay -->
+    <div id="adminPanel" class="admin-panel">
+        <div class="admin-container">
+            <div class="admin-header">
+                <h2><i class="fas fa-user-shield"></i> Admin Control Panel</h2>
+                <button id="closeAdminBtn" class="close-admin-btn"><i class="fas fa-times"></i></button>
+            </div>
+            
+            <div class="admin-tabs">
+                <button class="tab-btn active" data-tab="offers">Manage Offers</button>
+                <button class="tab-btn" data-tab="links">Update Links</button>
+                <button class="tab-btn" data-tab="contact">Contact Info</button>
+                <button class="tab-btn" data-tab="security">Security</button>
+                <button class="tab-btn" data-tab="data">Data Management</button>
+            </div>
+            
+            <!-- Offers Management Tab -->
+            <div id="offersTab" class="admin-tab-content active">
+                <h3><i class="fas fa-tag"></i> Manage Offers</h3>
+                <div class="offers-list" id="adminOffersList">
+                    <!-- Offers will be dynamically added here -->
+                </div>
+                <button id="addOfferBtn" class="btn btn-primary"><i class="fas fa-plus"></i> Add New Offer</button>
+            </div>
+            
+            <!-- Links Management Tab -->
+            <div id="linksTab" class="admin-tab-content">
+                <h3><i class="fas fa-link"></i> Update External Links</h3>
+                <div class="form-group">
+                    <label for="swiggyLink">Swiggy Order Link:</label>
+                    <input type="text" id="swiggyLink" placeholder="https://swiggy.com/restaurant/...">
+                </div>
+                <div class="form-group">
+                    <label for="zomatoLink">Zomato Order Link:</label>
+                    <input type="text" id="zomatoLink" placeholder="https://zomato.com/restaurant/...">
+                </div>
+                <button id="saveLinksBtn" class="btn btn-primary">Save Links</button>
+            </div>
+            
+            <!-- Contact Info Tab -->
+            <div id="contactTab" class="admin-tab-content">
+                <h3><i class="fas fa-address-book"></i> Update Contact Information</h3>
+                <div class="form-group">
+                    <label for="phoneNumber">Phone Number:</label>
+                    <input type="text" id="phoneNumber" placeholder="+91 XXXXX XXXXX">
+                </div>
+                <div class="form-group">
+                    <label for="whatsappLink">WhatsApp Link:</label>
+                    <input type="text" id="whatsappLink" placeholder="https://wa.me/91XXXXXXXXXX">
+                </div>
+                <div class="form-group">
+                    <label for="locationText">Location:</label>
+                    <input type="text" id="locationText" placeholder="Bengaluru, India">
+                </div>
+                <button id="saveContactBtn" class="btn btn-primary">Save Contact Info</button>
+            </div>
+            
+            <!-- Security Tab -->
+            <div id="securityTab" class="admin-tab-content">
+                <h3><i class="fas fa-shield-alt"></i> Security Settings</h3>
+                
+                <div class="form-group">
+                    <h4>Change Admin Password</h4>
+                    <div class="form-group">
+                        <label for="currentPassword">Current Password:</label>
+                        <input type="password" id="currentPassword" placeholder="Enter current password">
+                    </div>
+                    <div class="form-group">
+                        <label for="newPassword">New Password:</label>
+                        <input type="password" id="newPassword" placeholder="Enter new password">
+                        <div id="passwordStrength" class="password-strength"></div>
+                    </div>
+                    <div class="form-group">
+                        <label for="confirmPassword">Confirm New Password:</label>
+                        <input type="password" id="confirmPassword" placeholder="Confirm new password">
+                    </div>
+                    <button id="changePasswordBtn" class="btn btn-primary">Change Password</button>
+                </div>
+                
+                <div class="security-info">
+                    <h4><i class="fas fa-info-circle"></i> Security Tips:</h4>
+                    <ul>
+                        <li>Use a strong password (minimum 8 characters, mix of letters, numbers, symbols)</li>
+                        <li>Don't share your password with anyone</li>
+                        <li>Change your password regularly</li>
+                        <li>After 5 failed login attempts, the system will lock for 5 minutes</li>
+                        <li>You will be automatically logged out after 30 minutes of inactivity</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <!-- Data Management Tab -->
+            <div id="dataTab" class="admin-tab-content">
+                <h3><i class="fas fa-database"></i> Data Management</h3>
+                <p class="data-info">This website uses your browser's localStorage to save all data. Clearing browser data will reset to defaults.</p>
+                <div class="data-actions">
+                    <button id="exportDataBtn" class="btn btn-secondary"><i class="fas fa-download"></i> Export Data</button>
+                    <button id="importDataBtn" class="btn btn-secondary"><i class="fas fa-upload"></i> Import Data</button>
+                    <input type="file" id="importDataFile" accept=".json" style="display: none;">
+                    <button id="resetDataBtn" class="btn btn-danger"><i class="fas fa-trash"></i> Reset to Defaults</button>
+                </div>
+                <div class="admin-instructions">
+                    <h4><i class="fas fa-info-circle"></i> Admin Instructions:</h4>
+                    <ul>
+                        <li>Click the gear icon in the bottom right to access this panel</li>
+                        <li>All changes are saved automatically to your browser</li>
+                        <li>Changes appear instantly on the main site</li>
+                        <li>Export data to backup or transfer to another device</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="admin-footer">
+                <p>QuickDishKitchen Admin Panel - All changes saved to localStorage</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Website Content -->
+    <div class="website-container">
+        <!-- Header & Navigation -->
+        <header class="main-header">
+            <div class="container">
+                <div class="header-content">
+                    <div class="logo">
+                        <h1><i class="fas fa-utensils"></i> QuickDishKitchen</h1>
+                        <p class="tagline">Authentic Indian Flavors Delivered Fast</p>
+                    </div>
+                    <nav class="main-nav" id="mainNav">
+                        <ul>
+                            <li><a href="#home" class="nav-link active"><i class="fas fa-home"></i> Home</a></li>
+                            <li><a href="#offers" class="nav-link"><i class="fas fa-tag"></i> Offers</a></li>
+                            <li><a href="#order" class="nav-link"><i class="fas fa-shopping-cart"></i> Order Online</a></li>
+                            <li><a href="#contact" class="nav-link"><i class="fas fa-phone"></i> Contact</a></li>
+                        </ul>
+                    </nav>
+                    <button class="menu-toggle" id="menuToggle">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main>
+            <!-- Home Section -->
+            <section id="home" class="section home-section active">
+                <div class="container">
+                    <div class="hero">
+                        <div class="hero-content">
+                            <h2 class="hero-title">Delicious Indian Food <span class="highlight">Delivered to Your Door</span></h2>
+                            <p class="hero-subtitle">Authentic North & South Indian dishes prepared with love by our expert chefs</p>
+                            <div class="hero-buttons">
+                                <a href="#order" class="btn btn-primary btn-large">
+                                    <i class="fas fa-bolt"></i> Order Now
+                                </a>
+                                <a href="#offers" class="btn btn-secondary btn-large">
+                                    <i class="fas fa-tag"></i> View Offers
+                                </a>
+                            </div>
+                        </div>
+                        <div class="hero-image">
+                            <div class="food-image-placeholder">
+                                <i class="fas fa-utensils"></i>
+                                <p>Delicious Indian Cuisine</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Current Offers on Homepage -->
+                    <div class="home-offers">
+                        <h3 class="section-title"><i class="fas fa-fire"></i> Current Offers</h3>
+                        <div class="offers-grid" id="homeOffersGrid">
+                            <!-- Offers will be dynamically loaded here -->
+                        </div>
+                    </div>
+                    
+                    <!-- Order Buttons on Homepage -->
+                    <div class="order-platforms">
+                        <h3 class="section-title"><i class="fas fa-mobile-alt"></i> Order From Your Favorite App</h3>
+                        <div class="platform-buttons">
+                            <a id="swiggyBtn" href="#" target="_blank" class="platform-btn swiggy-btn">
+                                <i class="fas fa-bolt"></i>
+                                <span>Order on Swiggy</span>
+                            </a>
+                            <a id="zomatoBtn" href="#" target="_blank" class="platform-btn zomato-btn">
+                                <i class="fas fa-utensils"></i>
+                                <span>Order on Zomato</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Offers Section -->
+            <section id="offers" class="section offers-section">
+                <div class="container">
+                    <h2 class="section-title"><i class="fas fa-tags"></i> Special Offers</h2>
+                    <p class="section-subtitle">Enjoy these exclusive deals from QuickDishKitchen</p>
+                    <div class="offers-container" id="offersContainer">
+                        <!-- Offers will be dynamically loaded here -->
+                    </div>
+                </div>
+            </section>
+
+            <!-- Order Online Section -->
+            <section id="order" class="section order-section">
+                <div class="container">
+                    <h2 class="section-title"><i class="fas fa-shopping-cart"></i> Order Online</h2>
+                    <p class="section-subtitle">Get your favorite Indian dishes delivered quickly</p>
+                    
+                    <div class="order-content">
+                        <div class="order-info">
+                            <h3>How to Order</h3>
+                            <ol class="order-steps">
+                                <li>
+                                    <span class="step-number">1</span>
+                                    <div class="step-content">
+                                        <h4>Choose Your Platform</h4>
+                                        <p>Select Swiggy or Zomato based on your preference</p>
+                                    </div>
+                                </li>
+                                <li>
+                                    <span class="step-number">2</span>
+                                    <div class="step-content">
+                                        <h4>Browse Our Menu</h4>
+                                        <p>Explore our wide range of Indian dishes</p>
+                                    </div>
+                                </li>
+                                <li>
+                                    <span class="step-number">3</span>
+                                    <div class="step-content">
+                                        <h4>Place Your Order</h4>
+                                        <p>Add items to cart and checkout</p>
+                                    </div>
+                                </li>
+                                <li>
+                                    <span class="step-number">4</span>
+                                    <div class="step-content">
+                                        <h4>Enjoy Your Meal</h4>
+                                        <p>Hot, delicious food delivered to your doorstep</p>
+                                    </div>
+                                </li>
+                            </ol>
+                        </div>
+                        
+                        <div class="order-platforms-large">
+                            <h3>Order Now</h3>
+                            <div class="platform-cards">
+                                <a id="swiggyBtnLarge" href="#" target="_blank" class="platform-card swiggy-card">
+                                    <div class="platform-icon">
+                                        <i class="fas fa-bolt"></i>
+                                    </div>
+                                    <h4>Order on Swiggy</h4>
+                                    <p>Fast delivery | Live tracking</p>
+                                    <div class="platform-cta">Order Now <i class="fas fa-arrow-right"></i></div>
+                                </a>
+                                <a id="zomatoBtnLarge" href="#" target="_blank" class="platform-card zomato-card">
+                                    <div class="platform-icon">
+                                        <i class="fas fa-utensils"></i>
+                                    </div>
+                                    <h4>Order on Zomato</h4>
+                                    <p>Wide selection | Easy ordering</p>
+                                    <div class="platform-cta">Order Now <i class="fas fa-arrow-right"></i></div>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Contact Section -->
+            <section id="contact" class="section contact-section">
+                <div class="container">
+                    <h2 class="section-title"><i class="fas fa-phone-alt"></i> Contact Us</h2>
+                    <p class="section-subtitle">We'd love to hear from you</p>
+                    
+                    <div class="contact-content">
+                        <div class="contact-info">
+                            <div class="contact-card">
+                                <div class="contact-icon">
+                                    <i class="fas fa-phone"></i>
+                                </div>
+                                <h4>Call Us</h4>
+                                <p id="contactPhone">+91 98765 43210</p>
+                                <a id="callBtn" href="#" class="btn btn-primary btn-small">
+                                    <i class="fas fa-phone"></i> Click to Call
+                                </a>
+                            </div>
+                            
+                            <div class="contact-card">
+                                <div class="contact-icon">
+                                    <i class="fab fa-whatsapp"></i>
+                                </div>
+                                <h4>WhatsApp</h4>
+                                <p>Chat with us for queries</p>
+                                <a id="whatsappBtn" href="#" target="_blank" class="btn btn-success btn-small">
+                                    <i class="fab fa-whatsapp"></i> Start Chat
+                                </a>
+                            </div>
+                            
+                            <div class="contact-card">
+                                <div class="contact-icon">
+                                    <i class="fas fa-map-marker-alt"></i>
+                                </div>
+                                <h4>Location</h4>
+                                <p id="locationInfo">Bengaluru, India</p>
+                                <p class="location-note">Cloud Kitchen - Delivery only</p>
+                            </div>
+                            
+                            <div class="contact-card">
+                                <div class="contact-icon">
+                                    <i class="fas fa-clock"></i>
+                                </div>
+                                <h4>Operating Hours</h4>
+                                <p>11:00 AM - 11:00 PM</p>
+                                <p>Monday to Sunday</p>
+                            </div>
+                        </div>
+                        
+                        <div class="contact-message">
+                            <h3>QuickDishKitchen</h3>
+                            <p>We specialize in authentic Indian cuisine made with fresh ingredients and traditional recipes. As a cloud kitchen, we focus on perfecting each dish for delivery, ensuring it reaches you hot and delicious.</p>
+                            <p>Our menu features both North Indian classics like Butter Chicken and Biryani, as well as South Indian favorites like Dosas and Chettinad curries.</p>
+                            <div class="cuisine-tags">
+                                <span class="cuisine-tag">North Indian</span>
+                                <span class="cuisine-tag">South Indian</span>
+                                <span class="cuisine-tag">Vegetarian</span>
+                                <span class="cuisine-tag">Non-Vegetarian</span>
+                                <span class="cuisine-tag">Biryani Specials</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <!-- Footer -->
+        <footer class="main-footer">
+            <div class="container">
+                <div class="footer-content">
+                    <div class="footer-brand">
+                        <h3><i class="fas fa-utensils"></i> QuickDishKitchen</h3>
+                        <p>Authentic Indian cloud kitchen delivering delicious meals across Bengaluru.</p>
+                        <div class="social-links">
+                            <a href="#" class="social-link"><i class="fab fa-facebook-f"></i></a>
+                            <a href="#" class="social-link"><i class="fab fa-instagram"></i></a>
+                            <a href="#" class="social-link"><i class="fab fa-twitter"></i></a>
+                            <a href="#" class="social-link"><i class="fab fa-youtube"></i></a>
+                        </div>
+                    </div>
+                    
+                    <div class="footer-links">
+                        <h4>Quick Links</h4>
+                        <ul>
+                            <li><a href="#home">Home</a></li>
+                            <li><a href="#offers">Offers</a></li>
+                            <li><a href="#order">Order Online</a></li>
+                            <li><a href="#contact">Contact Us</a></li>
+                        </ul>
+                    </div>
+                    
+                    <div class="footer-contact">
+                        <h4>Contact Info</h4>
+                        <ul>
+                            <li><i class="fas fa-phone"></i> <span id="footerPhone">+91 98765 43210</span></li>
+                            <li><i class="fas fa-map-marker-alt"></i> <span id="footerLocation">Bengaluru, India</span></li>
+                            <li><i class="fas fa-clock"></i> 11:00 AM - 11:00 PM</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="footer-apps">
+                        <h4>Order From</h4>
+                        <div class="app-badges">
+                            <a id="footerSwiggyBtn" href="#" target="_blank" class="app-badge swiggy-badge">
+                                <i class="fas fa-bolt"></i> Swiggy
+                            </a>
+                            <a id="footerZomatoBtn" href="#" target="_blank" class="app-badge zomato-badge">
+                                <i class="fas fa-utensils"></i> Zomato
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="footer-bottom">
+                    <p>&copy; <span id="currentYear"></span> QuickDishKitchen. All rights reserved. | Cloud Kitchen - Delivery Only</p>
+                    <p class="disclaimer">Images are for representation only. Actual product may vary.</p>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Offer Edit Modal -->
+    <div id="offerModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modalTitle">Add New Offer</h3>
+                <button id="closeModalBtn" class="close-modal-btn"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="offerTitle">Offer Title:</label>
+                    <input type="text" id="offerTitle" placeholder="e.g., 30% Off on First Order">
+                </div>
+                <div class="form-group">
+                    <label for="offerDescription">Offer Description:</label>
+                    <textarea id="offerDescription" rows="3" placeholder="e.g., Get 30% discount on your first order above ₹300"></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="offerCode">Offer Code (optional):</label>
+                    <input type="text" id="offerCode" placeholder="e.g., QDK30">
+                </div>
+                <div class="form-group">
+                    <label for="offerValid">Valid Until:</label>
+                    <input type="date" id="offerValid">
+                </div>
+                <div class="form-group form-checkbox">
+                    <input type="checkbox" id="offerActive" checked>
+                    <label for="offerActive">Offer is Active</label>
+                </div>
+                <input type="hidden" id="offerId">
+            </div>
+            <div class="modal-footer">
+                <button id="cancelOfferBtn" class="btn btn-secondary">Cancel</button>
+                <button id="saveOfferBtn" class="btn btn-primary">Save Offer</button>
+                <button id="deleteOfferBtn" class="btn btn-danger" style="display: none;">Delete Offer</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notification Toast -->
+    <div id="toast" class="toast">
+        <div class="toast-content">
+            <i class="fas fa-check-circle toast-icon"></i>
+            <span class="toast-message">Changes saved successfully!</span>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
